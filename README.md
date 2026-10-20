@@ -30,6 +30,7 @@
 - **搜索**：`Ctrl K` 打开。Pagefind 的中文分词会漏掉"线程池"这类词中间的子串，所以结果由 Pagefind 全文结果和标题、简介、标签的子串匹配合并而成。
 - **视觉**：暖白配近黑的排版，标题无衬线、正文衬线，字体全部自托管。每页左侧的几何插画由页面路径决定，同一地址总是同一幅图，改了文件名插画也会变。首页和 404 页的点阵标题有飞入拼合动画，系统开启"减少动态效果"时直接显示成品。
 - **深色模式**：默认跟随系统，手动切换后记在 `localStorage`。
+- **分享卡片**：每篇文章和笔记在构建时生成一张 1200×630 的 PNG（`/og/<页面路径>.png`），内容是栏目、标题、简介和页面同款插画，其余页面共用 `/og/default.png`。页面头部带 Open Graph 和 Twitter Card 标签，链接发到社交平台时显示这张图。
 
 ## 快速开始
 
@@ -181,6 +182,7 @@ pnpm test:e2e     # 已经构建过时只跑测试
 - `pnpm build` 带 `--force`。不带的话，Astro 的 Content Layer 缓存会让代码块的样式文件（`ec.*.css`）在新构建里 404。
 - Astro 7 默认的 Markdown 处理器是 Sätteri。这里在 `astro.config.mjs` 里换回了 unified（remark/rehype），因为提示框、公式、GitHub 卡片这些插件都基于它。
 - `remark-github-admonitions-to-directives` v2 默认把 IMPORTANT、CAUTION 改名成 info、danger，配置里显式映射回了 GitHub 的原名。
+- 分享卡片由 `src/utils/og.ts` 生成：satori 排版成 SVG，resvg 转成 PNG。satori 读不了 woff2 和 oklch，所以字体用 fontsource 包里的 `.woff`，只加载卡片文字用到的 Noto Sans SC 子集；颜色是 `global.css` 亮色变量换算出的十六进制值，改配色时两边一起改。
 - Markdown 插件在 `src/plugins/`，浏览器端脚本（搜索、点阵标题、图片放大、GitHub 卡片）在 `src/scripts/`，插画生成在 `src/utils/glyph.ts`。
 
 ## 已知限制

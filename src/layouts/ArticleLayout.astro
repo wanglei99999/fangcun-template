@@ -31,13 +31,16 @@ interface Props {
   next?: Neighbor;
 }
 const { kind, title, description, crumbs, facts, headings, tags, date, source, prev, next } = Astro.props;
+// Built pages see a trailing slash and dev requests may not; normalise so the glyph is the same in both,
+// and matches the one on the share card (src/pages/og/[...path].png.ts).
+const pagePath = Astro.url.pathname.replace(/\/?$/, '/');
 ---
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} image={`/og${pagePath.slice(0, -1)}.png`} type="article">
   <article class="article" data-pagefind-body data-pagefind-meta={`kind:${kind}`}>
     <header class="article-head rail-layout">
       <div class="rail" data-pagefind-ignore>
         <nav class="crumbs" aria-label="位置">{crumbs.map(crumb => <a href={crumb.url}>{crumb.title}</a>)}</nav>
-        <Glyph seed={Astro.url.pathname} />
+        <Glyph seed={pagePath} />
       </div>
       <h1>{title}</h1>
     </header>

@@ -18,14 +18,20 @@ import Dialogs from '../components/Dialogs.astro';
 import BackToTop from '../components/BackToTop.astro';
 import { site } from '../data/site';
 import { getNotes, getPosts, noteUrl, postUrl } from '../utils/content';
+import { OG_HEIGHT, OG_WIDTH } from '../utils/og';
 
 interface Props {
   title?: string;
   description?: string;
+  /** Share card path; articles and notes have their own, other pages use the site card. */
+  image?: string;
+  type?: 'website' | 'article';
 }
 const siteName = site.name;
-const { title, description = `${site.name}：${site.description}` } = Astro.props;
+const { title, description = `${site.name}：${site.description}`, image = '/og/default.png', type = 'website' } = Astro.props;
 const pageTitle = title ? `${title} — ${siteName}` : `${siteName} — ${site.titleTagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const imageUrl = new URL(image, Astro.site);
 
 // Metadata of every article and note, for search when the Pagefind full-text index is unavailable (dev mode).
 const [posts, notes] = await Promise.all([getPosts(), getNotes()]);
@@ -45,7 +51,18 @@ const pageIndexJson = JSON.stringify(pageIndex).replaceAll('<', '\\u003c');
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:title" content={title ?? siteName} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content={String(OG_WIDTH)} />
+    <meta property="og:image:height" content={String(OG_HEIGHT)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={imageUrl} />
     <link rel="alternate" type="application/rss+xml" title={siteName} href="/rss.xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <title>{pageTitle}</title>
