@@ -7,6 +7,7 @@ dist/
 # Local tool state
 .impeccable/
 .claude/settings.local.json
+.claude/worktrees/
 
 # Playwright
 test-results/

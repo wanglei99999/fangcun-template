@@ -1,31 +1,52 @@
-# 方寸之间 · 博客模板
+# 方寸之间
 
 > 方寸之间见天地，细微之处有乾坤。
 
-一个用 Astro 构建的中文个人博客与笔记站模板，纯静态，可直接部署到 Cloudflare。仓库里的文章、笔记和列表都是示例内容。
+用 Astro 构建的中文个人博客模板，纯静态输出，部署到 Cloudflare。它面向这样一种用法：读工程博客时写解读，平时积累自己的技术笔记，顺手收藏仓库、Skills 和工具。仓库里的文章、笔记和列表都是示例内容。
 
-## 特性
+| 首页（亮色） | 笔记详情（暗色） |
+| --- | --- |
+| ![首页，亮色模式](docs/home-light.png) | ![笔记详情页，暗色模式](docs/note-dark.png) |
 
-- **五个栏目**：文章（工程博客解读，附原文链接）、知识库（按主题归档的笔记）、仓库、Skills、工具箱，外加归档页和关于页
-- **阅读体验**：阅读时间、滚动高亮的目录、Expressive Code 代码块（行号、折叠、复制、语言标签）、KaTeX 数学公式、图片点击放大、标题锚点、提示框、GitHub 仓库卡片、文末版权声明
-- **搜索**：Pagefind 全文检索，并合并标题、简介、标签的子串匹配，弥补中文分词的不足
-- **视觉**：暖白配近黑的排版体系、按页面地址生成的几何插画、首页和 404 页的点阵标题动画，支持深色模式和减少动态效果
-- **其他**：RSS、Sitemap、robots.txt、404 页、新建文章脚本、Playwright 端到端测试
+## 栏目与数据来源
+
+文章和笔记是 Markdown 文件，有独立的详情页；仓库、Skills、工具箱是 `src/data/content.ts` 里的数组，点开后在弹窗里预览。
+
+| 栏目 | 路径 | 内容 | 数据 |
+| --- | --- | --- | --- |
+| 文章 | `/posts` | 工程博客的阅读解读，每篇必须注明原文 | `src/content/posts/*.md` |
+| 知识库 | `/notes` | 自己的笔记，按主题分组 | `src/content/notes/<目录>/*.md` |
+| 仓库 | `/repos` | 关注的 GitHub 仓库 | `content.ts` 的 `repos` |
+| Skills | `/skills` | 自己维护的 Skills | `content.ts` 的 `skills` |
+| 工具箱 | `/toolbox` | 网上收藏的工具 | `content.ts` 的 `tools` |
+| 归档 | `/archive` | 全部文章和笔记，`?tag=` 按标签筛选 | 自动生成 |
+| 关于 | `/about` | 简介、项目、提交日历、留言墙 | `site.ts` 和 `content.ts` 的 `projects`、`guestbook` |
+
+另有 RSS（`/rss.xml`）、Sitemap、`robots.txt` 和 404 页。
+
+## 功能
+
+- **阅读**：阅读时间、随滚动高亮的目录、Expressive Code 代码块（行号、折叠、复制、语言标签）、KaTeX 公式、PhotoSwipe 图片放大、标题锚点、提示框、GitHub 仓库卡片、文末版权声明。文章的声明写"原文版权归原作者所有"，笔记的声明使用 `site.ts` 里的许可协议。
+- **搜索**：`Ctrl K` 打开。Pagefind 的中文分词会漏掉"线程池"这类词中间的子串，所以结果由 Pagefind 全文结果和标题、简介、标签的子串匹配合并而成。
+- **视觉**：暖白配近黑的排版，标题无衬线、正文衬线，字体全部自托管。每页左侧的几何插画由页面路径决定，同一地址总是同一幅图，改了文件名插画也会变。首页和 404 页的点阵标题有飞入拼合动画，系统开启"减少动态效果"时直接显示成品。
+- **深色模式**：默认跟随系统，手动切换后记在 `localStorage`。
 
 ## 快速开始
 
-需要 Node.js 22.22 或更高版本，以及 pnpm 11（`package.json` 里锁定了 `packageManager`，可以用 `corepack enable` 自动启用）。
+需要 Node.js 22.22 以上和 pnpm 11。`package.json` 里写了 `packageManager`，执行 `corepack enable` 后会自动用对版本。
 
 ```sh
 pnpm install
-pnpm dev          # 本地开发：http://127.0.0.1:4321
-pnpm build        # 构建到 dist/，并生成 Pagefind 搜索索引
-pnpm preview      # 预览构建结果（全文搜索只在这里可用）
+pnpm dev          # http://127.0.0.1:4321
+pnpm build        # 构建到 dist/，再生成 Pagefind 索引
+pnpm preview      # 预览构建结果
 ```
+
+Pagefind 索引只在 `pnpm build` 时生成，所以 `pnpm dev` 里的搜索只匹配标题、简介和标签，全文搜索要在 `pnpm preview` 里试。
 
 ## 用这个模板建自己的站
 
-推荐克隆后推到你自己的新仓库，而不是用 GitHub 的 "Use this template" 按钮。这样两个仓库共享历史，以后模板有改进时可以直接合并过来。
+建议克隆后推到自己的新仓库，不要用 GitHub 的 "Use this template" 按钮。按钮生成的仓库和模板没有共同历史，以后模板的改进合并不过来；克隆的仓库可以直接 `git pull upstream main`。
 
 ```sh
 git clone https://github.com/wanglei99999/fangcun-template.git my-site
@@ -42,12 +63,15 @@ git pull upstream main
 
 | 位置 | 改什么 |
 | --- | --- |
-| `src/data/site.ts` | 站名、首页标语、简介、作者、GitHub 用户名、文章许可协议 |
-| `src/content/posts/`、`src/content/notes/` | 换成你的文章和笔记 |
-| `src/data/content.ts` | 仓库、Skills、工具箱、关于页的项目和留言 |
-| `public/` | 网站图标（`favicon.svg`、`favicon-32.png`、`apple-touch-icon.png`） |
-| `src/components/SiteFooter.astro` | 内容换成真的之后，删掉"此站为设计预览，内容均为示例" |
-| `tests/e2e/` | 部分测试断言了示例内容（标题、篇数），换内容时一并更新 |
+| `src/data/site.ts` | 站名、首页标语、简介、作者、GitHub 用户名、笔记的许可协议 |
+| `src/content/posts/`、`src/content/notes/` | 删掉示例，放自己的文章和笔记 |
+| `src/data/content.ts` | 仓库、Skills、工具箱、文章页侧栏的博客来源、关于页的项目和留言 |
+| `public/` | 网站图标：`favicon.svg`、`favicon-32.png`、`apple-touch-icon.png` |
+| `tests/e2e/` | 部分测试断言了示例内容的标题和篇数，换内容时一起改 |
+
+内容换成真的以后，还有三处"示例"字样写在组件里：页脚的"此站为设计预览，内容均为示例"（`src/components/SiteFooter.astro`）、预览弹窗的"示例内容，阅读预览"（`src/components/Dialogs.astro`）、关于页留言墙下的说明（`src/pages/about.astro`）。
+
+`site.ts` 的 `github` 留空时，页脚和关于页的 GitHub 链接指向 `https://github.com/`，关于页按钮显示"GitHub 账号待填写"。
 
 ## 写作
 
@@ -56,7 +80,41 @@ pnpm new-post agent-memory "标题"          # 新建 src/content/posts/agent-me
 pnpm new-note java/thread-local "标题"     # 新建 src/content/notes/java/thread-local.md
 ```
 
-新文件默认是 `draft: true`：在 `pnpm dev` 里可见，`pnpm build` 不会发布，写完改成 `false`。新笔记会沿用同目录下已有笔记的主题名。frontmatter 的字段定义在 `src/content.config.ts`。
+脚本生成完整的 frontmatter，文件名只能用小写字母、数字和连字符。新文件是 `draft: true`：`pnpm dev` 里能看到，`pnpm build` 不会发布，写完改成 `false`。
+
+### Frontmatter
+
+字段由 `src/content.config.ts` 校验，缺字段或格式不对时构建直接报错。
+
+文章：
+
+```yaml
+title: 比提示词更重要的，是上下文
+description: 列表和搜索结果里显示的一句话简介
+published: 2026-10-12
+updated: 2026-10-15          # 可选
+blog: Anthropic              # 来源简称，文章列表按它筛选
+source:
+  name: Anthropic Engineering
+  url: https://www.anthropic.com/engineering
+tags: [Claude, Agent]
+draft: false
+```
+
+笔记：
+
+```yaml
+title: Java 并发：从线程到线程池
+description: 线程生命周期、任务提交、线程池参数和关闭行为。
+topic: Java                  # 知识库按它分组显示
+updated: 2026-10-08
+tags: [Java, 并发]
+draft: false
+```
+
+笔记的地址由目录决定（`notes/java/concurrency.md` 对应 `/notes/java/concurrency`），分组名由 `topic` 决定，两者可以不同。`pnpm new-note` 会沿用同目录下已有笔记的 `topic`，目录是新建的时候用目录名。
+
+图片和 Markdown 文件放在一起，用相对路径引用，构建时由 Astro 打包，位图会被压缩。
 
 ### Markdown 扩展
 
@@ -79,54 +137,51 @@ $$
 ![图片说明，也是放大后的替代文字](./diagram.svg)
 ```
 
+GitHub 卡片在浏览器里请求 GitHub API，结果在 `sessionStorage` 里缓存一小时；接口不通时卡片退化成普通链接。
+
+代码块默认带行号，命令行、纯文本和 Markdown 除外。`collapse` 指定默认折叠的行：
+
 ````md
 ```python title="hybrid.py" collapse={1-5}
-# 第 1–5 行默认折叠；代码块默认显示行号，命令行和纯文本除外
+# 第 1–5 行默认折叠
 ```
 ````
+
+## 部署到 Cloudflare
+
+| 设置 | 值 |
+| --- | --- |
+| 构建命令 | `pnpm build` |
+| 输出目录 | `dist` |
+| 环境变量 | `NODE_VERSION=24`，`SITE_URL=https://你的域名` |
+
+`SITE_URL` 不设时默认是 `https://notes.example.com`，RSS、Sitemap 和 canonical 链接都会指错地址。
+
+Cloudflare Pages 会自动把 `404.html` 当作 404 页。用 Workers 部署时，需要在配置里写 `not_found_handling = "404-page"`。`*.pages.dev` 在国内访问不稳定，最好绑定自己的域名。
 
 ## 测试
 
 ```sh
-pnpm test                 # 构建后运行全部端到端测试
-pnpm test:e2e             # 已经构建过时，只跑测试
+pnpm test         # 构建后运行全部端到端测试
+pnpm test:e2e     # 已经构建过时只跑测试
 ```
 
-测试会自动启动 `astro preview`。第一次运行前用 `pnpm exec playwright install chromium` 下载浏览器；也可以设置 `PW_CHANNEL=msedge`（或 `chrome`）改用本机已装的浏览器。
+测试用 Playwright，会自己启动 `astro preview`（端口 4322），覆盖首页、详情页、归档筛选、搜索、点阵标题动画等。第一次运行前执行 `pnpm exec playwright install chromium` 下载浏览器，或者设置 `PW_CHANNEL=msedge`（或 `chrome`）用本机已装的浏览器。
 
-## 部署到 Cloudflare
+## 维护时要知道的事
 
-- 构建命令：`pnpm build`，输出目录：`dist`
-- 环境变量：`NODE_VERSION=24`，`SITE_URL=https://你的域名`（RSS、Sitemap、canonical 链接都会用到）
-- Cloudflare Pages 会自动把 `404.html` 用作 404 页；如果用 Workers 部署，需要在配置里设置 `not_found_handling = "404-page"`
-- `*.pages.dev` 在国内访问不稳定，建议绑定自己的域名
-
-## 目录结构
-
-```text
-src/
-  content/            文章与笔记（Markdown）
-  content.config.ts   frontmatter 定义
-  data/site.ts        站点信息
-  data/content.ts     仓库、Skills、工具箱、关于页数据
-  layouts/            BaseLayout（全站）、ArticleLayout（详情页）
-  components/         列表、页头页脚、目录、点阵标题、插画等
-  pages/              路由
-  plugins/            remark / rehype / Expressive Code 插件
-  scripts/            浏览器端脚本：搜索、点阵标题、灯箱、GitHub 卡片
-  styles/             样式
-  utils/              内容查询、插画生成
-scripts/new-content.mjs   新建文章脚本
-tests/e2e/                Playwright 测试
-```
+- `pnpm build` 带 `--force`。不带的话，Astro 的 Content Layer 缓存会让代码块的样式文件（`ec.*.css`）在新构建里 404。
+- Astro 7 默认的 Markdown 处理器是 Sätteri。这里在 `astro.config.mjs` 里换回了 unified（remark/rehype），因为提示框、公式、GitHub 卡片这些插件都基于它。
+- `remark-github-admonitions-to-directives` v2 默认把 IMPORTANT、CAUTION 改名成 info、danger，配置里显式映射回了 GitHub 的原名。
+- Markdown 插件在 `src/plugins/`，浏览器端脚本（搜索、点阵标题、图片放大、GitHub 卡片）在 `src/scripts/`，插画生成在 `src/utils/glyph.ts`。
 
 ## 已知限制
 
-- 关于页的 GitHub 提交日历是占位数据
-- 留言墙和点子收集箱只有界面，表单是禁用状态，需要接入后端（比如 Cloudflare D1）后才能用
+- 关于页的 GitHub 提交日历是占位数据。
+- 留言墙和点子收集箱只有界面，表单处于禁用状态，要接入后端（比如 Cloudflare D1）才能用。
 
 ## 许可与致谢
 
 代码以 [MIT 许可](./LICENSE) 发布。`src/content/` 里的文章按各篇文末声明的协议授权。
 
-文章阅读相关的功能参考并移植自 [Fuwari](https://github.com/saicaca/fuwari)（MIT 许可，© saicaca），包括：阅读时间插件、提示框与指令插件、GitHub 卡片结构、目录高亮思路、RSS 和 robots 端点、Expressive Code（语言标签、行号、代码折叠）、Pagefind、KaTeX 与 PhotoSwipe 的配置、文末版权声明和新建文章脚本。版式参考了 Anthropic 官网与工程博客的排版体系，没有使用其名称、Logo、专有字体或插画。
+文章阅读相关的功能参考并移植自 [Fuwari](https://github.com/saicaca/fuwari)（MIT 许可，© saicaca），包括阅读时间插件、提示框与指令插件、GitHub 卡片结构、目录高亮思路、RSS 和 robots 端点、Expressive Code 的语言标签、行号和折叠配置、Pagefind、KaTeX 与 PhotoSwipe 的配置、文末版权声明和新建文章脚本。版式参考了 Anthropic 官网与工程博客的排版体系，没有使用其名称、Logo、专有字体或插画。
