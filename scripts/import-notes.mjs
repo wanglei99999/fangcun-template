@@ -207,6 +207,7 @@ function importNote(context, { file, slug }) {
   fs.writeFileSync(target, `---\n${head}\n---\n\n${finalBody.trimEnd()}\n`, 'utf8');
   console.log(`${exists ? '更新' : '导入'} ${path.relative(process.cwd(), target)}`);
   stats.imported++;
+  if (!exists) stats.created++;
 }
 
 function main() {
@@ -236,12 +237,12 @@ function main() {
     return { file, slug };
   });
 
-  const context = { options, repo, originOf, targetDir, topic, siteUrlByOrigin, warnings: [], stats: { imported: 0, skipped: 0, siteLinks: 0, repoLinks: 0, images: 0 } };
+  const context = { options, repo, originOf, targetDir, topic, siteUrlByOrigin, warnings: [], stats: { imported: 0, created: 0, skipped: 0, siteLinks: 0, repoLinks: 0, images: 0 } };
   for (const note of batch) importNote(context, note);
 
   const { stats, warnings } = context;
   console.log(`\n完成：导入 ${stats.imported} 篇，跳过 ${stats.skipped} 篇；站内链接 ${stats.siteLinks} 个，指向源仓库 ${stats.repoLinks} 个，图片 ${stats.images} 张。`);
-  if (!options.publish && stats.imported) console.log('新导入的笔记是草稿（draft: true），检查后改成 false 再发布。');
+  if (!options.publish && stats.created) console.log('新导入的笔记是草稿（draft: true），检查后改成 false 再发布。');
   for (const warning of warnings) console.warn(`注意：${warning}`);
 }
 
