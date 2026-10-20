@@ -17,6 +17,9 @@ export async function getNotes(): Promise<Note[]> {
   return notes.toSorted((a, b) => b.data.updated.valueOf() - a.data.updated.valueOf());
 }
 
+/** Reading order inside a topic: by file name, numbers compared as numbers, so a series (01-, 02-) reads in sequence. */
+export const byFileName = (a: Note, b: Note): number => a.id.localeCompare(b.id, 'zh-CN', { numeric: true });
+
 export const postUrl = (post: Post): string => `/posts/${post.id}`;
 export const noteUrl = (note: Note): string => `/notes/${note.id}`;
 export const tagUrl = (tag: string): string => `/archive?tag=${encodeURIComponent(tag)}`;

@@ -116,7 +116,35 @@ draft: false
 
 笔记的地址由目录决定（`notes/java/concurrency.md` 对应 `/notes/java/concurrency`），分组名由 `topic` 决定，两者可以不同。`pnpm new-note` 会沿用同目录下已有笔记的 `topic`，目录是新建的时候用目录名。
 
+同一主题的笔记在知识库页和"上一篇 / 下一篇"里按文件名排序，数字按数值比较，所以系列笔记用 `01-`、`02-` 开头就会按顺序排。首页只显示最近更新的几篇。
+
 图片和 Markdown 文件放在一起，用相对路径引用，构建时由 Astro 打包，位图会被压缩。
+
+### 导入已有笔记
+
+笔记原本写在别处（Obsidian 库、另一个仓库）时，用导入命令复制进来：
+
+```sh
+pnpm import-notes ../learn_note/Agent agent              # 导入目录下的 .md，放进 src/content/notes/agent/
+pnpm import-notes ../learn_note/Agent agent --topic "Agent 原理" --publish
+pnpm import-notes ../learn_note/Agent agent --force      # 源文件改过之后重新导入
+```
+
+源笔记不需要 frontmatter，命令按下面的规则生成：
+
+| 字段或内容 | 来源 |
+| --- | --- |
+| `title` | 正文第一个 `# 标题`，从正文里移走（页面会单独显示标题） |
+| `description` | 第一段。150 字以内且没有链接、公式、代码时整段移到这里，作为页面导语；否则取第一句，正文不动 |
+| `updated` | 源文件在 git 里最后一次提交的日期，取不到时用标题下的"创建日期：YYYY-MM-DD"行 |
+| `topic` | `--topic` 的值，默认是源目录名 |
+| `origin` | 源文件在它所在仓库里的路径，用来在多次导入之间解析链接 |
+| 图片和附件 | 复制到目标目录，保持相对路径 |
+| 指向其他笔记的 `.md` 链接 | 目标也导入过的，改成站内地址；没导入的，改成源仓库在 GitHub 上的地址 |
+
+导入目录时跳过 `README.md` 和 `CLAUDE.md`，不进入子目录。代码块和行内代码里的链接保持原样。新导入的笔记是草稿，加 `--publish` 直接发布。目标文件已存在时默认跳过；加 `--force` 会用源文件覆盖正文，但保留网站这边已经改过的 frontmatter，只刷新 `updated`。Obsidian 的 `[[双链]]` 不会转换，命令会列出含有双链的文件。
+
+自动生成的 `description` 常常是"上一篇……"这样的承接句，放在列表里读不出这篇讲什么，发布前最好逐篇改写。
 
 ### Markdown 扩展
 

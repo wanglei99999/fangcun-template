@@ -10,7 +10,8 @@
     "test": "pnpm build && playwright test",
     "test:e2e": "playwright test",
     "new-post": "node scripts/new-content.mjs post",
-    "new-note": "node scripts/new-content.mjs note"
+    "new-note": "node scripts/new-content.mjs note",
+    "import-notes": "node scripts/import-notes.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "7.3.3",

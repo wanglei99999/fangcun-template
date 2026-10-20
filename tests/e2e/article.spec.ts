@@ -36,7 +36,9 @@ test('article page: facts, code, scroll-aware TOC, admonitions, license', async 
 test('note page: crumbs, topic-scoped pager, GitHub-style admonition, own license', async ({ page }) => {
   await page.goto('/notes/java/concurrency');
   await expect(page.locator('.crumbs a')).toHaveCount(2);
-  await expect(page.locator('.pager-prev')).toHaveAttribute('href', '/notes/java/jvm-memory');
+  // Topic pages run in file-name order: concurrency comes before jvm-memory.
+  await expect(page.locator('.pager-prev')).toHaveCount(0);
+  await expect(page.locator('.pager-next')).toHaveAttribute('href', '/notes/java/jvm-memory');
   await expect(page.locator('.admonition-important')).toHaveCount(1);
   await expect(page.locator('.license')).toContainText('CC BY-NC-SA 4.0');
 });

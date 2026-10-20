@@ -1,13 +1,13 @@
 ---
 import { render } from 'astro:content';
 import ArticleLayout, { type Fact } from '../../layouts/ArticleLayout.astro';
-import { formatDate, getNotes, neighbors, noteUrl, type Note } from '../../utils/content';
+import { byFileName, formatDate, getNotes, neighbors, noteUrl, type Note } from '../../utils/content';
 
 export async function getStaticPaths() {
   const notes = await getNotes();
   return notes.map(note => {
-    // Prev/next stay within the same topic.
-    const sameTopic = notes.filter(item => item.data.topic === note.data.topic);
+    // Prev/next stay within the same topic, in reading order; neighbors() takes the list last-first.
+    const sameTopic = notes.filter(item => item.data.topic === note.data.topic).toSorted(byFileName).toReversed();
     const index = sameTopic.indexOf(note);
     return {
       params: { slug: note.id },

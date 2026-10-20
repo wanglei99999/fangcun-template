@@ -28,6 +28,8 @@ const notes = defineCollection({
     topic: z.string(),
     updated: z.coerce.date(),
     tags: z.array(z.string()).default([]),
+    /** Source path of a note brought in by `pnpm import-notes`, used to resolve links between imports. */
+    origin: z.string().optional(),
     draft: z.boolean().default(false),
   }),
 });
