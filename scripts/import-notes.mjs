@@ -1,6 +1,7 @@
 // Imports Markdown notes written elsewhere (an Obsidian vault, another repository) into src/content/notes.
 //   pnpm import-notes <源文件或目录> <主题目录> [--topic 主题名] [--publish] [--force]
-// A directory imports its top-level .md files, except README.md and CLAUDE.md. Each note gets front matter
+// A directory imports its top-level .md files, except README.md, CLAUDE.md and the source paths listed in
+// .importignore at the site root. Each note gets front matter
 // built from the source (first "# 标题", first paragraph, git date), images it references are copied along,
 // and links between notes become site URLs; links to notes that aren't on the site point at the source
 // repository on GitHub. Imported notes start as drafts unless --publish is given.
@@ -11,6 +12,13 @@ import path from 'node:path';
 const NOTES_ROOT = path.resolve('src/content/notes');
 const SKIPPED_FILES = new Set(['readme.md', 'claude.md']);
 const DATE_LINE = /^(?:创建日期|更新日期|日期)[:：]\s*(\d{4}-\d{2}-\d{2})\s*$/;
+const IGNORE_FILE = '.importignore';
+
+/** Source paths (relative to their repository, one per line, # for comments) that are never imported. */
+function readIgnoreList() {
+  if (!fs.existsSync(IGNORE_FILE)) return new Set();
+  return new Set(fs.readFileSync(IGNORE_FILE, 'utf8').split(/\r?\n/).map(line => line.trim()).filter(line => line && !line.startsWith('#')));
+}
 
 function fail(message) {
   console.error(`错误：${message}`);
@@ -229,9 +237,17 @@ function main() {
   const targetDir = path.join(NOTES_ROOT, topicDir);
   const topic = options.topic ?? path.basename(path.dirname(files[0]));
 
+  // Notes listed in .importignore stay off the site; links to them keep pointing at the source repository.
+  const ignored = readIgnoreList();
+  const included = files.filter(file => {
+    if (!ignored.has(originOf(file))) return true;
+    console.log(`忽略 ${originOf(file)}（在 ${IGNORE_FILE} 里）`);
+    return false;
+  });
+
   // Every note in this batch plus earlier imports, so links among them become site URLs.
   const siteUrlByOrigin = importedNotes();
-  const batch = files.map(file => {
+  const batch = included.map(file => {
     const slug = slugify(path.basename(file, '.md'));
     siteUrlByOrigin.set(originOf(file), `/notes/${topicDir}/${slug}`);
     return { file, slug };
