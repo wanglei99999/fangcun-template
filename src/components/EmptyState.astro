@@ -1,0 +1,8 @@
+---
+// Shown in place of a list that has nothing published yet.
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+---
+<p class="empty-state">{text}</p>

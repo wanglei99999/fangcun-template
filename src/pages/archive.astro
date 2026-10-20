@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from '../components/PageHeader.astro';
+import EmptyState from '../components/EmptyState.astro';
 import { formatDate, getArchive, tagUrl } from '../utils/content';
 import '../styles/archive.css';
 
@@ -29,6 +30,7 @@ const tags = [...tagCounts].toSorted(([a, countA], [b, countB]) => countB - coun
     </aside>
 
     <div class="timeline">
+      {years.length === 0 && <EmptyState text="还没有发布的文章和笔记。" />}
       {years.map(group => (
         <section class="timeline-year group" aria-labelledby={`year-${group.year}`}>
           <h2 class="group-title" id={`year-${group.year}`}>{group.year}<span data-year-count>{group.items.length} 篇</span></h2>
