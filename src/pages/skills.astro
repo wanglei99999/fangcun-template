@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Glyph from '../components/Glyph.astro';
+import PageHeader from '../components/PageHeader.astro';
+import SkillList from '../components/SkillList.astro';
+import { skills } from '../data/content';
+---
+<BaseLayout title="Skills" description="自己保留和打磨的 AI Skills。">
+  <PageHeader title="Skills" intro="自己保留和打磨的 Skills：适用场景、使用方法，以及用下来的经验。" />
+  <div class="rail-layout">
+    <aside class="rail">
+      <p class="rail-note">点开一个 Skill，看它适合什么场景、怎么用。</p>
+      <Glyph seed="/skills" />
+    </aside>
+    <section aria-label="Skills 列表">
+      <SkillList skills={skills} detailed />
+    </section>
+  </div>
+</BaseLayout>

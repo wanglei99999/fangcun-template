@@ -1,0 +1,73 @@
+---
+import '@fontsource/hanken-grotesk/500.css';
+import '@fontsource/hanken-grotesk/600.css';
+import '@fontsource/hanken-grotesk/700.css';
+import '@fontsource/noto-sans-sc/500.css';
+import '@fontsource/noto-sans-sc/700.css';
+import '@fontsource/source-serif-4/400.css';
+import '@fontsource/source-serif-4/400-italic.css';
+import '@fontsource/source-serif-4/600.css';
+import '@fontsource/noto-serif-sc/400.css';
+import '@fontsource/noto-serif-sc/600.css';
+import '../styles/global.css';
+import '../styles/sections.css';
+import '../styles/dialogs.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import Dialogs from '../components/Dialogs.astro';
+import BackToTop from '../components/BackToTop.astro';
+import { site } from '../data/site';
+import { getNotes, getPosts, noteUrl, postUrl } from '../utils/content';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const siteName = site.name;
+const { title, description = `${site.name}：${site.description}` } = Astro.props;
+const pageTitle = title ? `${title} — ${siteName}` : `${siteName} — ${site.titleTagline}`;
+
+// Metadata of every article and note, for search when the Pagefind full-text index is unavailable (dev mode).
+const [posts, notes] = await Promise.all([getPosts(), getNotes()]);
+const pageIndex = [
+  ...posts.map(post => ({ kind: '文章', title: post.data.title, text: `${post.data.description} ${post.data.blog} ${post.data.tags.join(' ')}`, url: postUrl(post) })),
+  ...notes.map(note => ({ kind: '知识库', title: note.data.title, text: `${note.data.description} ${note.data.topic} ${note.data.tags.join(' ')}`, url: noteUrl(note) })),
+];
+const pageIndexJson = JSON.stringify(pageIndex).replaceAll('<', '\\u003c');
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#faf9f5" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="alternate" type="application/rss+xml" title={siteName} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <title>{pageTitle}</title>
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem('notes-theme');
+        if (saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.dataset.theme = 'dark';
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要内容</a>
+    <SiteHeader />
+    <main id="main" class="wrap">
+      <slot />
+    </main>
+    <SiteFooter />
+    <BackToTop />
+    <Dialogs />
+    <script type="application/json" id="page-index" set:html={pageIndexJson} />
+    <script>
+      import '../scripts/site';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import Glyph from '../components/Glyph.astro';
+import PixelTitle from '../components/PixelTitle.astro';
+import ArticleList from '../components/ArticleList.astro';
+import NoteList from '../components/NoteList.astro';
+import RepoGrid from '../components/RepoGrid.astro';
+import SkillList from '../components/SkillList.astro';
+import ToolGrid from '../components/ToolGrid.astro';
+import { repos, skills, tools } from '../data/content';
+import { site } from '../data/site';
+import { formatDate, getNotes, getPosts, postUrl } from '../utils/content';
+
+const [posts, notes] = await Promise.all([getPosts(), getNotes()]);
+const [featured, ...recentPosts] = posts;
+---
+<BaseLayout>
+  <section class="hero rail-layout" aria-labelledby="hero-heading">
+    <div class="rail"><Glyph seed="home" /></div>
+    <div>
+      <PixelTitle text={site.name} assemble="once" />
+      <h1 id="hero-heading">{site.motto.map(clause => <span class="clause">{clause}</span>)}</h1>
+      <p class="hero-lede">读各大技术团队的工程博客，<br class="hero-break" />整理自己的笔记，收藏一路上遇到的好东西。</p>
+      <form class="hero-search-form" id="hero-search-form" role="search">
+        <label class="sr-only" for="hero-query">搜索全站内容</label>
+        <span class="hero-search-icon"><Icon name="search" size={18} /></span>
+        <input id="hero-query" name="q" type="search" placeholder="搜索文章、笔记、仓库、Skills…" autocomplete="off" enterkeyhint="search" />
+        <button class="button button-solid" type="submit">搜索</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="rail-layout" aria-labelledby="posts-heading">
+    <div class="rail">
+      <h2 class="rail-title" id="posts-heading">工程博客</h2>
+      <p class="rail-note">读各大团队的工程实践，记下要点和自己的理解。</p>
+      <a class="rail-link" href="/posts">全部 {posts.length} 篇</a>
+    </div>
+    <div>
+      {featured && (
+        <article class="featured">
+          <p class="featured-label">最新</p>
+          <h3><a href={postUrl(featured)}>{featured.data.title}</a></h3>
+          <p class="featured-summary">{featured.data.description}</p>
+          <p class="entry-meta"><span>{featured.data.blog}</span><time datetime={formatDate(featured.data.published)}>{formatDate(featured.data.published)}</time></p>
+        </article>
+      )}
+      <ArticleList posts={recentPosts.slice(0, 3)} compact />
+    </div>
+  </section>
+
+  <section class="rail-layout" aria-labelledby="notes-heading">
+    <div class="rail">
+      <h2 class="rail-title" id="notes-heading">知识库</h2>
+      <p class="rail-note">记录所学，让想法生长。</p>
+      <a class="rail-link" href="/notes">全部 {notes.length} 篇</a>
+    </div>
+    <NoteList notes={notes.slice(0, 4)} />
+  </section>
+
+  <section class="rail-layout" aria-labelledby="repos-heading">
+    <div class="rail">
+      <h2 class="rail-title" id="repos-heading">仓库</h2>
+      <p class="rail-note">GitHub 上在关注的开源项目。</p>
+      <a class="rail-link" href="/repos">全部 {repos.length} 个</a>
+    </div>
+    <RepoGrid repos={repos.slice(0, 4)} />
+  </section>
+
+  <section class="rail-layout" aria-labelledby="skills-heading">
+    <div class="rail">
+      <h2 class="rail-title" id="skills-heading">Skills</h2>
+      <p class="rail-note">自己保留和打磨的 Skills。</p>
+      <a class="rail-link" href="/skills">全部 {skills.length} 个</a>
+    </div>
+    <SkillList skills={skills.slice(0, 3)} />
+  </section>
+
+  <section class="rail-layout" aria-labelledby="tools-heading">
+    <div class="rail">
+      <h2 class="rail-title" id="tools-heading">工具箱</h2>
+      <p class="rail-note">网上收藏的好用工具。</p>
+      <a class="rail-link" href="/toolbox">全部 {tools.length} 个</a>
+    </div>
+    <ToolGrid tools={tools.slice(0, 6)} />
+  </section>
+</BaseLayout>

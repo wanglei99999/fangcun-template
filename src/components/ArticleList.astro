@@ -1,0 +1,25 @@
+---
+import { formatDate, postUrl, tagUrl, type Post } from '../utils/content';
+
+interface Props {
+  posts: Post[];
+  id?: string;
+  compact?: boolean;
+}
+const { posts, id, compact = false } = Astro.props;
+---
+<ol class:list={['entry-list', { compact }]} id={id}>
+  {posts.map(post => (
+    <li class="entry" data-category={post.data.blog}>
+      <div class="entry-main">
+        <h3 class="entry-title"><a href={postUrl(post)}>{post.data.title}</a></h3>
+        {!compact && <p class="entry-summary">{post.data.description}</p>}
+        <p class="entry-meta">
+          <span>{post.data.blog}</span>
+          {!compact && post.data.tags.map(tag => <a href={tagUrl(tag)}>#{tag}</a>)}
+        </p>
+      </div>
+      <time class="entry-date" datetime={formatDate(post.data.published)}>{formatDate(post.data.published)}</time>
+    </li>
+  ))}
+</ol>

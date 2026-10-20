@@ -1,0 +1,14 @@
+---
+interface Props {
+  title: string;
+  intro?: string;
+}
+const { title, intro } = Astro.props;
+---
+<header class="page-header">
+  <div>
+    <h1>{title}</h1>
+    {intro && <p>{intro}</p>}
+  </div>
+  {Astro.slots.has('default') && <div class="page-header-actions"><slot /></div>}
+</header>

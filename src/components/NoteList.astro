@@ -1,0 +1,21 @@
+---
+import { formatDate, noteUrl, type Note } from '../utils/content';
+
+interface Props {
+  notes: Note[];
+  detailed?: boolean;
+}
+const { notes, detailed = false } = Astro.props;
+---
+<ol class:list={['entry-list', { compact: !detailed }]}>
+  {notes.map(note => (
+    <li class="entry">
+      <div class="entry-main">
+        <h3 class="entry-title"><a href={noteUrl(note)}>{note.data.title}</a></h3>
+        {detailed && <p class="entry-summary">{note.data.description}</p>}
+        {!detailed && <p class="entry-meta"><span>{note.data.topic}</span></p>}
+      </div>
+      <time class="entry-date" datetime={formatDate(note.data.updated)}>{formatDate(note.data.updated)}</time>
+    </li>
+  ))}
+</ol>

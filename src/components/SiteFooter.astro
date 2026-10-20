@@ -1,0 +1,28 @@
+---
+import { githubUrl, site } from '../data/site';
+
+const groups = [
+  { title: '内容', links: [['文章', '/posts'], ['知识库', '/notes'], ['归档', '/archive'], ['仓库', '/repos'], ['Skills', '/skills'], ['工具箱', '/toolbox']] },
+  { title: '关于', links: [['关于我', '/about'], ['RSS 订阅', '/rss.xml'], ['GitHub', githubUrl]] },
+];
+---
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <strong>{site.name}</strong>
+        <p>{site.motto.join('')}{site.intro}</p>
+      </div>
+      {groups.map(group => (
+        <nav class="footer-group" aria-label={group.title}>
+          <h2>{group.title}</h2>
+          <ul>{group.links.map(([label, href]) => <li><a href={href}>{label}</a></li>)}</ul>
+        </nav>
+      ))}
+    </div>
+    <div class="footer-bottom">
+      <span>© {site.since} {site.name}，基于 Astro 构建</span>
+      <span class="footer-note">此站为设计预览，内容均为示例</span>
+    </div>
+  </div>
+</footer>

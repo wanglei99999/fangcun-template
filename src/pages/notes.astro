@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Glyph from '../components/Glyph.astro';
+import PageHeader from '../components/PageHeader.astro';
+import NoteList from '../components/NoteList.astro';
+import { getNotes } from '../utils/content';
+
+const notes = await getNotes();
+const topics = [...new Set(notes.map(note => note.data.topic))].map((topic, index) => ({
+  id: `topic-${index + 1}`,
+  name: topic,
+  notes: notes.filter(note => note.data.topic === topic),
+}));
+---
+<BaseLayout title="知识库" description="按主题整理的个人学习笔记。">
+  <PageHeader title="知识库" intro="记录所学，让想法生长。未必成篇，按主题归档，有新的理解就回来再添一笔。">
+    <a class="button button-outline" href="/archive">按时间和标签浏览</a>
+  </PageHeader>
+  <div class="rail-layout">
+    <aside class="rail rail-sticky" aria-labelledby="topics-heading">
+      <h2 class="rail-title" id="topics-heading">主题</h2>
+      <ul class="rail-index">
+        {topics.map(topic => <li><a href={`#${topic.id}`}>{topic.name}<span>{topic.notes.length}</span></a></li>)}
+      </ul>
+      <Glyph seed="/notes" />
+    </aside>
+    <div>
+      {topics.map(topic => (
+        <section class="group" aria-labelledby={topic.id}>
+          <h2 class="group-title" id={topic.id}>{topic.name}<span>{topic.notes.length} 篇</span></h2>
+          <NoteList notes={topic.notes} detailed />
+        </section>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

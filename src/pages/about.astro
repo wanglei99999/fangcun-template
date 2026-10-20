@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import Glyph from '../components/Glyph.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ContributionCalendar from '../components/ContributionCalendar.astro';
+import { projects, guestbook } from '../data/content';
+import { githubUrl, site } from '../data/site';
+import '../styles/about.css';
+---
+<BaseLayout title="关于" description={`关于${site.name}和它的作者。`}>
+  <PageHeader title="关于我">
+    <a class="button button-outline" href={githubUrl} target="_blank" rel="noopener noreferrer"><Icon name="github" size={16} />{site.github ? `@${site.github}` : 'GitHub 账号待填写'}</a>
+  </PageHeader>
+
+  <section class="rail-layout" aria-label="个人简介">
+    <div class="rail"><Glyph seed="/about" /></div>
+    <div class="about-bio">
+      <p class="about-lede">我在这里记录技术实践、工程博客的阅读理解和自己的知识库。</p>
+      <p>目标是保持克制表达，长期更新。文章是读各大技术团队工程博客的笔记，知识库是自己按主题整理的学习记录，仓库、Skills 和工具箱是一路收藏下来的好东西。</p>
+    </div>
+  </section>
+
+  <section class="rail-layout" aria-labelledby="calendar-heading">
+    <div class="rail">
+      <h2 class="rail-title" id="calendar-heading">GitHub 提交</h2>
+      <p class="rail-note">占位数据，接入 GitHub 账号后显示真实记录。</p>
+    </div>
+    <div><ContributionCalendar /></div>
+  </section>
+
+  <section class="rail-layout" aria-labelledby="projects-heading">
+    <div class="rail">
+      <h2 class="rail-title" id="projects-heading">我的项目</h2>
+      <p class="rail-note">从工作流到桌面工具，把想法做成可以使用的项目。</p>
+    </div>
+    <div class="showcase-list">
+      {projects.map(project => (
+        <article class="showcase">
+          <Glyph seed={project.repo} class="showcase-glyph" />
+          <div class="showcase-info">
+            <span class="showcase-repo">{project.repo}</span>
+            <h3>{project.title}</h3>
+            <p class="showcase-tagline">{project.tagline}</p>
+            <ul class="showcase-features">{project.features.map(feature => <li>{feature}</li>)}</ul>
+            <p class="entry-meta">{project.tags.map(tag => <span>#{tag}</span>)}</p>
+            <details>
+              <summary>项目介绍</summary>
+              <p>{project.intro}</p>
+            </details>
+            <a class="button button-outline" href={`https://github.com/${project.repo}`} target="_blank" rel="noopener noreferrer">GitHub 仓库 ↗</a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="rail-layout" aria-labelledby="guestbook-heading">
+    <div class="rail">
+      <h2 class="rail-title" id="guestbook-heading">留言墙</h2>
+      <p class="rail-note">示例留言。留言需要接入后端存储，上线 Cloudflare 后开放。</p>
+    </div>
+    <div>
+      <ul class="message-wall">{guestbook.map(message => <li><p>“{message.text}”</p><span>{message.name}</span></li>)}</ul>
+      <form class="message-form" aria-label="写留言">
+        <fieldset disabled>
+          <label class="sr-only" for="guest-name">昵称</label>
+          <input id="guest-name" placeholder="昵称（2–20 字）" />
+          <label class="sr-only" for="guest-text">留言内容</label>
+          <input id="guest-text" placeholder="留言内容（5–200 字）" />
+          <button class="button button-solid" type="submit">提交</button>
+        </fieldset>
+      </form>
+    </div>
+  </section>
+
+  <section class="rail-layout" aria-labelledby="ideas-heading">
+    <div class="rail">
+      <h2 class="rail-title" id="ideas-heading">点子收集箱</h2>
+      <p class="rail-note">提交需要接入后端存储，上线 Cloudflare 后开放。</p>
+    </div>
+    <div>
+      <p class="ideas-empty">还没有收到点子。想看我写什么、做什么，都可以告诉我。</p>
+      <form class="message-form" aria-label="提交点子">
+        <fieldset disabled>
+          <label class="sr-only" for="idea-name">昵称</label>
+          <input id="idea-name" placeholder="昵称（2–20 字）" />
+          <label class="sr-only" for="idea-text">点子内容</label>
+          <input id="idea-text" placeholder="点子内容（5–500 字）" />
+          <button class="button button-solid" type="submit">提交</button>
+        </fieldset>
+      </form>
+    </div>
+  </section>
+</BaseLayout>

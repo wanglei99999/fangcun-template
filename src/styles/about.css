@@ -1,0 +1,67 @@
+/* Bio */
+.about-bio { max-width: 720px; }
+.about-lede { font-size: clamp(22px, 2.4vw, 30px); font-weight: 600; line-height: 1.4; letter-spacing: -.01em; }
+.about-bio p + p { font-family: var(--serif); font-size: 18px; line-height: 1.8; color: var(--ink-2); margin-top: 18px; }
+
+/* Contribution calendar */
+.calendar-scroll { overflow-x: auto; padding-bottom: 4px; }
+.calendar {
+  --cell: 13px;
+  --gap: 3px;
+  display: grid;
+  grid-template-columns: 24px auto;
+  gap: 6px 4px;
+  width: max-content;
+  font-size: 12px;
+  color: var(--muted);
+}
+.calendar-months { grid-column: 2; display: grid; grid-template-columns: repeat(var(--weeks), var(--cell)); column-gap: var(--gap); }
+.calendar-months > span { white-space: nowrap; }
+.calendar-weekdays { display: grid; grid-template-rows: repeat(7, var(--cell)); row-gap: var(--gap); line-height: var(--cell); }
+.calendar-grid { display: grid; grid-template-rows: repeat(7, var(--cell)); grid-auto-flow: column; grid-auto-columns: var(--cell); gap: var(--gap); }
+.calendar-grid > span, .calendar-legend > span { width: var(--cell, 13px); height: var(--cell, 13px); border-radius: 2px; }
+.level-0 { background: var(--line); }
+.level-1 { background: color-mix(in oklch, var(--glyph-olive) 30%, var(--bg)); }
+.level-2 { background: color-mix(in oklch, var(--glyph-olive) 55%, var(--bg)); }
+.level-3 { background: color-mix(in oklch, var(--glyph-olive) 80%, var(--bg)); }
+.level-4 { background: var(--glyph-olive); }
+.level--1 { visibility: hidden; }
+.calendar-legend { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 10px; color: var(--muted); font-size: 12px; max-width: 880px; }
+
+/* Projects */
+.showcase { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 40px; padding: 8px 0 40px; }
+.showcase + .showcase { padding-top: 40px; border-top: 1px solid var(--line); }
+.showcase-repo { font-size: 14px; color: var(--muted); }
+.showcase-info h3 { font-size: clamp(26px, 2.8vw, 34px); font-weight: 700; line-height: 1.2; letter-spacing: -.01em; margin: 4px 0 8px; }
+.showcase-tagline { font-family: var(--serif); font-size: 19px; color: var(--ink-2); }
+.showcase-features { margin-top: 16px; border-top: 1px solid var(--line); }
+.showcase-features li { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.showcase .entry-meta { margin-top: 14px; }
+.showcase details { margin: 16px 0 20px; }
+.showcase summary { cursor: pointer; font-weight: 600; }
+.showcase summary:hover { text-decoration: underline; text-underline-offset: 4px; }
+.showcase details p { font-family: var(--serif); color: var(--ink-2); margin-top: 8px; }
+
+/* Guestbook and ideas */
+.message-wall { border-top: 1px solid var(--line); margin-bottom: 24px; }
+.message-wall li { display: flex; justify-content: space-between; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.message-wall p { font-family: var(--serif); font-size: 18px; }
+.message-wall span { color: var(--muted); font-size: 14px; white-space: nowrap; }
+.ideas-empty { font-family: var(--serif); font-size: 18px; color: var(--ink-2); margin-bottom: 24px; }
+.message-form fieldset { display: grid; grid-template-columns: 1fr 2fr auto; gap: 8px; border: 0; padding: 0; max-width: 720px; }
+.message-form input {
+  min-width: 0; padding: 9px 12px;
+  background: var(--bg);
+  border: 1px solid var(--ink); border-radius: var(--radius);
+  font-size: 15px;
+}
+.message-form input::placeholder { color: var(--muted); }
+.message-form fieldset:disabled { opacity: .5; }
+.message-form fieldset:disabled button { cursor: not-allowed; }
+
+@media (max-width: 600px) {
+  .showcase { grid-template-columns: 1fr; gap: 20px; }
+  .showcase-glyph { max-width: 140px; }
+  .message-form fieldset { grid-template-columns: 1fr; }
+  .message-wall li { flex-direction: column; gap: 2px; }
+}

@@ -1,0 +1,21 @@
+---
+import Icon from './Icon.astro';
+---
+<button class="back-to-top" id="back-to-top" aria-label="回到顶部" hidden>
+  <Icon name="up" size={20} />
+</button>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('#back-to-top')!;
+  let frame = 0;
+  const update = (): void => {
+    frame = 0;
+    button.hidden = scrollY < innerHeight;
+  };
+  addEventListener('scroll', () => { if (!frame) frame = requestAnimationFrame(update); }, { passive: true });
+  button.addEventListener('click', () => {
+    scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    document.querySelector<HTMLElement>('.brand')?.focus({ preventScroll: true });
+  });
+  update();
+</script>

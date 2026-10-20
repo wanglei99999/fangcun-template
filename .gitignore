@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.astro/
+.tmp/
+.DS_Store
+
+# Local tool state
+.impeccable/
+.claude/settings.local.json
+
+# Playwright
+test-results/
+playwright-report/

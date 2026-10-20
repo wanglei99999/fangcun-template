@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import Glyph from '../components/Glyph.astro';
+import PixelTitle from '../components/PixelTitle.astro';
+import { site } from '../data/site';
+---
+<BaseLayout title="找不到页面" description="这个页面不存在。">
+  <section class="not-found rail-layout" aria-labelledby="not-found-heading">
+    <div class="rail"><Glyph seed="/404" class="not-found-glyph" /></div>
+    <div>
+      <PixelTitle text="404" assemble="always" />
+      <h1 id="not-found-heading">此页不在{site.name}。</h1>
+      <p class="not-found-lede">
+        你访问的 <code class="not-found-path">这个地址</code> 不存在。它可能被移动、改了名字，也可能还没写出来。
+      </p>
+
+      <form class="hero-search-form" id="hero-search-form" role="search">
+        <label class="sr-only" for="not-found-query">搜索全站内容</label>
+        <span class="hero-search-icon"><Icon name="search" size={18} /></span>
+        <input id="not-found-query" name="q" type="search" placeholder="换个关键词搜搜看…" autocomplete="off" enterkeyhint="search" />
+        <button class="button button-solid" type="submit">搜索</button>
+      </form>
+
+      <nav class="not-found-actions" aria-label="去别处看看">
+        <a class="button button-outline" href="/">回到首页</a>
+        <a class="button button-outline" href="/archive" id="random-entry">随便看一篇</a>
+        <a class="button button-outline" href="/archive">按时间浏览</a>
+      </nav>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { glyphMarkup } from '../utils/glyph';
+
+  const path = decodeURIComponent(location.pathname);
+
+  // Name the missing address.
+  document.querySelector('.not-found-path')!.textContent = path;
+
+  // Every missing address gets its own glyph, seeded by the path.
+  document.querySelector('.not-found-glyph')!.innerHTML = glyphMarkup(path);
+
+  // Pre-fill the search with the last path segment: /notes/java/thread-local → "thread local".
+  const lastSegment = path.split('/').filter(Boolean).at(-1) ?? '';
+  const guess = lastSegment.replace(/\.html?$/, '').replace(/[-_]+/g, ' ').trim();
+  const input = document.querySelector<HTMLInputElement>('#not-found-query')!;
+  if (guess) input.value = guess;
+
+  // "随便看一篇" picks a random article or note from the search index embedded in every page.
+  try {
+    const pages: { url: string; title: string }[] = JSON.parse(document.querySelector('#page-index')?.textContent ?? '[]');
+    const link = document.querySelector<HTMLAnchorElement>('#random-entry')!;
+    if (pages.length) {
+      const pick = pages[Math.floor(Math.random() * pages.length)];
+      link.href = pick.url;
+      link.title = pick.title;
+    }
+  } catch {}
+</script>
+
+<style>
+  .not-found { padding-top: clamp(48px, 7vw, 96px); padding-bottom: clamp(48px, 7vw, 96px); }
+  .not-found .rail :global(.glyph) { margin-top: 0; max-width: none; }
+  .not-found :global(.pixel-title) { max-width: 520px; }
+  h1 { font-size: clamp(28px, 3.2vw, 42px); font-weight: 700; line-height: 1.2; letter-spacing: -.01em; margin-top: clamp(24px, 3vw, 36px); }
+  .not-found-lede { font-family: var(--serif); font-size: clamp(18px, 1.6vw, 21px); line-height: 1.6; color: var(--ink-2); margin: 14px 0 32px; max-width: 32em; }
+  .not-found-path {
+    padding: .1em .4em;
+    background: var(--surface);
+    border-radius: 4px;
+    font: .85em var(--mono);
+    color: var(--ink);
+    word-break: break-all;
+  }
+  .not-found-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+</style>

@@ -1,0 +1,19 @@
+---
+import type { Tool } from '../data/content';
+import Icon from './Icon.astro';
+
+interface Props {
+  tools: Tool[];
+}
+const { tools } = Astro.props;
+---
+<ul class="link-grid">
+  {tools.map(tool => (
+    <li>
+      <a href={tool.url} target="_blank" rel="noopener noreferrer">
+        <strong>{tool.title}<Icon name="arrow" size={15} /></strong>
+        <span>{tool.description}</span>
+      </a>
+    </li>
+  ))}
+</ul>

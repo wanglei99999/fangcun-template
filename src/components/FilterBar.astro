@@ -1,0 +1,13 @@
+---
+interface Props {
+  target: string;
+  label: string;
+  options: { name: string; count: number }[];
+  total: number;
+}
+const { target, label, options, total } = Astro.props;
+---
+<div class="filter-bar" role="group" aria-label={label} data-target={target}>
+  <button class="filter-button selected" data-filter="all" aria-pressed="true">全部<span>{total}</span></button>
+  {options.map(option => <button class="filter-button" data-filter={option.name} aria-pressed="false">{option.name}<span>{option.count}</span></button>)}
+</div>

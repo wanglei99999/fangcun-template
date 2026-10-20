@@ -1,0 +1,10 @@
+---
+import { GLYPH_SIZE, glyphMarkup } from '../utils/glyph';
+
+interface Props {
+  seed: string;
+  class?: string;
+}
+const { seed, class: className } = Astro.props;
+---
+<svg class:list={['glyph', className]} viewBox={`0 0 ${GLYPH_SIZE} ${GLYPH_SIZE}`} aria-hidden="true" focusable="false" set:html={glyphMarkup(seed)} />

@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import Glyph from '../components/Glyph.astro';
+import PageHeader from '../components/PageHeader.astro';
+import FilterBar from '../components/FilterBar.astro';
+import ArticleList from '../components/ArticleList.astro';
+import { blogSources } from '../data/content';
+import { getPosts } from '../utils/content';
+
+const posts = await getPosts();
+const blogs = [...new Set(posts.map(post => post.data.blog))].map(name => ({ name, count: posts.filter(post => post.data.blog === name).length }));
+---
+<BaseLayout title="文章" description="各大技术团队工程博客的阅读与解读。">
+  <PageHeader title="文章" intro="读各大技术团队的工程博客，记下原文要点和自己的理解。">
+    <a class="button button-outline" href="/archive">按时间和标签浏览</a>
+  </PageHeader>
+  <div class="rail-layout">
+    <aside class="rail">
+      <h2 class="rail-title">来源</h2>
+      <FilterBar target="#all-articles" label="按博客来源筛选" options={blogs} total={posts.length} />
+      <h2 class="rail-title rail-subtitle">在读的博客</h2>
+      <ul class="source-list">
+        {blogSources.map(source => (
+          <li><a href={source.url} target="_blank" rel="noopener noreferrer"><strong>{source.name}<Icon name="arrow" size={14} /></strong><span>{source.note}</span></a></li>
+        ))}
+      </ul>
+      <Glyph seed="/posts" />
+    </aside>
+    <section aria-label="文章列表">
+      <ArticleList posts={posts} id="all-articles" />
+    </section>
+  </div>
+</BaseLayout>

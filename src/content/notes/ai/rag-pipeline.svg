@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="300" viewBox="0 0 960 300" font-family="'Hanken Grotesk','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif">
+  <rect width="960" height="300" rx="10" fill="#faf9f5"/>
+  <g fill="none" stroke="#141413" stroke-width="2">
+    <rect x="30" y="60" width="130" height="64" rx="6"/>
+    <rect x="210" y="60" width="130" height="64" rx="6"/>
+    <rect x="390" y="60" width="130" height="64" rx="6"/>
+    <rect x="390" y="176" width="130" height="64" rx="6"/>
+    <rect x="570" y="176" width="130" height="64" rx="6"/>
+    <rect x="750" y="176" width="180" height="64" rx="6" fill="#bcd1ca" stroke="#141413"/>
+    <rect x="30" y="176" width="130" height="64" rx="6" stroke-dasharray="6 5"/>
+    <path d="M160 92 H204 M340 92 H384 M455 124 V170 M520 208 H564 M700 208 H744 M160 208 H384"/>
+    <path d="M198 86 l8 6 -8 6 M378 86 l8 6 -8 6 M449 162 l6 8 6 -8 M558 202 l8 6 -8 6 M738 202 l8 6 -8 6 M378 202 l8 6 -8 6"/>
+  </g>
+  <g fill="#141413" font-size="18" font-weight="700" text-anchor="middle">
+    <text x="95" y="98">文档</text>
+    <text x="275" y="98">结构感知分片</text>
+    <text x="455" y="90">建立索引</text>
+    <text x="455" y="214">混合召回</text>
+    <text x="635" y="214">重排</text>
+    <text x="840" y="214">生成回答</text>
+    <text x="95" y="214">用户问题</text>
+  </g>
+  <g fill="#5c5b55" font-size="13" text-anchor="middle">
+    <text x="455" y="110">向量 + 关键词</text>
+  </g>
+  <g fill="#5c5b55" font-size="14" text-anchor="middle">
+    <text x="275" y="40">离线：建索引</text>
+    <text x="635" y="276">在线：每次提问</text>
+  </g>
+</svg>

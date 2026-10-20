@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Glyph from '../components/Glyph.astro';
+import PageHeader from '../components/PageHeader.astro';
+import RepoGrid from '../components/RepoGrid.astro';
+import { repos } from '../data/content';
+---
+<BaseLayout title="仓库" description="GitHub 上关注、常用或正在研究的开源仓库。">
+  <PageHeader title="仓库" intro="GitHub 上关注、常用或正在研究的开源仓库，附上为什么收藏它。" />
+  <div class="rail-layout">
+    <aside class="rail">
+      <p class="rail-note">点开一个仓库，能看到收藏它的理由和 GitHub 链接。</p>
+      <Glyph seed="/repos" />
+    </aside>
+    <section aria-label="仓库列表">
+      <RepoGrid repos={repos} />
+    </section>
+  </div>
+</BaseLayout>

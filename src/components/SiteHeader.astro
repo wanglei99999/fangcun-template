@@ -1,0 +1,27 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+
+const navigation = [
+  ['首页', '/'], ['文章', '/posts'], ['知识库', '/notes'], ['仓库', '/repos'],
+  ['Skills', '/skills'], ['工具箱', '/toolbox'], ['关于', '/about'],
+];
+const current = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string): boolean => href === current || (href !== '/' && current.startsWith(`${href}/`));
+---
+<header class="site-header">
+  <div class="header-inner wrap">
+    <a class="brand" href="/" aria-label={`${site.name}首页`}>{site.name}</a>
+    <nav class="desktop-nav" aria-label="主导航">
+      {navigation.map(([label, href]) => <a href={href} class:list={{ active: isActive(href) }} aria-current={isActive(href) ? 'page' : undefined}>{label}</a>)}
+    </nav>
+    <div class="header-actions">
+      <button class="search-trigger header-search button button-solid" aria-label="搜索全站"><Icon name="search" size={16} /><span>搜索</span><kbd>Ctrl K</kbd></button>
+      <button class="icon-button" id="theme-toggle" aria-label="切换深色模式" aria-pressed="false"><Icon name="sun" size={19} /></button>
+      <button class="icon-button mobile-menu-toggle" aria-label="展开导航" aria-expanded="false" aria-controls="mobile-nav"><Icon name="menu" /></button>
+    </div>
+  </div>
+  <nav class="mobile-nav wrap" id="mobile-nav" aria-label="移动端导航" hidden>
+    {navigation.map(([label, href]) => <a href={href} class:list={{ active: isActive(href) }}>{label}</a>)}
+  </nav>
+</header>

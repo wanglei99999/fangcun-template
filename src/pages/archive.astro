@@ -1,0 +1,84 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { formatDate, getArchive, tagUrl } from '../utils/content';
+import '../styles/archive.css';
+
+const items = await getArchive();
+const years = [...new Set(items.map(item => item.date.getUTCFullYear()))].map(year => ({
+  year,
+  items: items.filter(item => item.date.getUTCFullYear() === year),
+}));
+const tagCounts = new Map<string, number>();
+items.flatMap(item => item.tags).forEach(tag => tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1));
+const tags = [...tagCounts].toSorted(([a, countA], [b, countB]) => countB - countA || a.localeCompare(b, 'zh-CN'));
+---
+<BaseLayout title="归档" description="按时间和标签浏览全部文章与笔记。">
+  <PageHeader title="归档" intro={`按时间翻看全部 ${items.length} 篇文章和笔记，也可以按标签筛选。`} />
+
+  <div class="rail-layout">
+    <aside class="rail rail-sticky tag-cloud" aria-labelledby="tags-heading">
+      <h2 class="rail-title" id="tags-heading">标签</h2>
+      <ul>
+        {tags.map(([tag, count]) => <li><a class="tag-chip" href={tagUrl(tag)} data-tag={tag}>#{tag}<span>{count}</span></a></li>)}
+      </ul>
+      <p class="filter-status" id="filter-status" aria-live="polite" hidden>
+        <span id="filter-summary"></span>
+        <a href="/archive" id="filter-clear">清除筛选</a>
+      </p>
+    </aside>
+
+    <div class="timeline">
+      {years.map(group => (
+        <section class="timeline-year group" aria-labelledby={`year-${group.year}`}>
+          <h2 class="group-title" id={`year-${group.year}`}>{group.year}<span data-year-count>{group.items.length} 篇</span></h2>
+          <ol>
+            {group.items.map(item => (
+              <li class="timeline-item" data-tags={item.tags.join('|')}>
+                <time datetime={formatDate(item.date)}>{formatDate(item.date).slice(5)}</time>
+                <a href={item.url}>{item.title}</a>
+                <span class="timeline-group">{item.kind}，{item.group}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  const chips = [...document.querySelectorAll<HTMLAnchorElement>('.tag-chip')];
+  const status = document.querySelector<HTMLElement>('#filter-status')!;
+  const summary = document.querySelector<HTMLElement>('#filter-summary')!;
+
+  function applyTag(tag: string | null): void {
+    let shown = 0;
+    document.querySelectorAll<HTMLElement>('.timeline-year').forEach(year => {
+      let yearShown = 0;
+      year.querySelectorAll<HTMLElement>('.timeline-item').forEach(item => {
+        const match = !tag || item.dataset.tags!.split('|').includes(tag);
+        item.hidden = !match;
+        if (match) yearShown++;
+      });
+      year.hidden = yearShown === 0;
+      year.querySelector('[data-year-count]')!.textContent = `${yearShown} 篇`;
+      shown += yearShown;
+    });
+    chips.forEach(chip => chip.toggleAttribute('aria-current', chip.dataset.tag === tag));
+    status.hidden = !tag;
+    summary.textContent = tag ? `标签 #${tag} 下共 ${shown} 篇` : '';
+  }
+
+  function navigate(tag: string | null): void {
+    history.replaceState(null, '', tag ? `?tag=${encodeURIComponent(tag)}` : location.pathname);
+    applyTag(tag);
+  }
+
+  chips.forEach(chip => chip.addEventListener('click', event => {
+    event.preventDefault();
+    navigate(chip.hasAttribute('aria-current') ? null : chip.dataset.tag!);
+  }));
+  document.querySelector('#filter-clear')!.addEventListener('click', event => { event.preventDefault(); navigate(null); });
+  applyTag(new URLSearchParams(location.search).get('tag'));
+</script>

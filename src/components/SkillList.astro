@@ -1,0 +1,20 @@
+---
+import type { Entry } from '../data/content';
+
+interface Props {
+  skills: Entry[];
+  detailed?: boolean;
+}
+const { skills, detailed = false } = Astro.props;
+---
+<ol class:list={['entry-list', { compact: !detailed }]}>
+  {skills.map(skill => (
+    <li class="entry">
+      <button class="entry-main entry-trigger skill" data-entry={skill.id}>
+        <strong class="entry-title skill-name">{skill.title}</strong>
+        <span class="entry-summary">{skill.description}</span>
+        {detailed && <span class="entry-meta">{skill.tags.map(tag => <span>#{tag}</span>)}</span>}
+      </button>
+    </li>
+  ))}
+</ol>

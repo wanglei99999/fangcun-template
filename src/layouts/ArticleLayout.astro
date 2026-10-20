@@ -1,0 +1,85 @@
+---
+import type { MarkdownHeading } from 'astro';
+import BaseLayout from './BaseLayout.astro';
+import Glyph from '../components/Glyph.astro';
+import License from '../components/License.astro';
+import TOC from '../components/TOC.astro';
+import { tagUrl, type Neighbor } from '../utils/content';
+import 'katex/dist/katex.min.css';
+import '../styles/article.css';
+
+export interface Fact {
+  label: string;
+  value: string;
+  href?: string;
+  datetime?: string;
+}
+
+interface Props {
+  kind: '文章' | '知识库';
+  title: string;
+  description: string;
+  crumbs: Neighbor[];
+  facts: Fact[];
+  headings: MarkdownHeading[];
+  tags: string[];
+  /** Date shown in the license block. */
+  date: string;
+  /** Original article for reading notes; its copyright is credited instead of the site license. */
+  source?: { name: string; url: string };
+  prev?: Neighbor;
+  next?: Neighbor;
+}
+const { kind, title, description, crumbs, facts, headings, tags, date, source, prev, next } = Astro.props;
+---
+<BaseLayout title={title} description={description}>
+  <article class="article" data-pagefind-body data-pagefind-meta={`kind:${kind}`}>
+    <header class="article-head rail-layout">
+      <div class="rail" data-pagefind-ignore>
+        <nav class="crumbs" aria-label="位置">{crumbs.map(crumb => <a href={crumb.url}>{crumb.title}</a>)}</nav>
+        <Glyph seed={Astro.url.pathname} />
+      </div>
+      <h1>{title}</h1>
+    </header>
+
+    <div class="article-body rail-layout">
+      <aside class="rail article-aside" data-pagefind-ignore>
+        <dl class="facts">
+          {facts.map(fact => (
+            <div>
+              <dt>{fact.label}</dt>
+              <dd>
+                {fact.href ? <a href={fact.href} target="_blank" rel="noopener noreferrer">{fact.value} ↗</a>
+                  : fact.datetime ? <time datetime={fact.datetime}>{fact.value}</time>
+                  : fact.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <TOC headings={headings} />
+      </aside>
+
+      <div class="article-content">
+        <p class="article-lede">{description}</p>
+        <div class="prose">
+          <slot />
+        </div>
+        <footer class="article-footer" data-pagefind-ignore>
+          <License title={title} date={date} source={source} />
+          {tags.length > 0 && <p class="entry-meta">{tags.map(tag => <a href={tagUrl(tag)}>#{tag}</a>)}</p>}
+          {(prev || next) && (
+            <nav class="pager" aria-label="上一篇和下一篇">
+              {prev ? <a class="pager-prev" href={prev.url}><span>上一篇</span><strong>{prev.title}</strong></a> : <span></span>}
+              {next && <a class="pager-next" href={next.url}><span>下一篇</span><strong>{next.title}</strong></a>}
+            </nav>
+          )}
+        </footer>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<script>
+  import '../scripts/github-cards';
+  import '../scripts/lightbox';
+</script>

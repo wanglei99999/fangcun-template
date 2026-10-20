@@ -1,0 +1,16 @@
+---
+interface Props {
+  text: string;
+  /** Dots start scattered and fly into place: "always" on every load; "once" (quicker) on reload or arrival from outside the site. */
+  assemble?: 'always' | 'once';
+}
+const { text, assemble } = Astro.props;
+---
+<div class="pixel-title" data-text={text} data-assemble={assemble} aria-hidden="true">
+  <span class="pixel-title-fallback">{text}</span>
+  <canvas></canvas>
+</div>
+
+<script>
+  import '../scripts/pixel-title';
+</script>

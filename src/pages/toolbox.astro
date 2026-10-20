@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Glyph from '../components/Glyph.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ToolGrid from '../components/ToolGrid.astro';
+import { tools } from '../data/content';
+
+const categories = [...new Set(tools.map(tool => tool.category))].map((category, index) => ({
+  id: `category-${index + 1}`,
+  name: category,
+  tools: tools.filter(tool => tool.category === category),
+}));
+---
+<BaseLayout title="工具箱" description="网上收藏的好用工具与资料。">
+  <PageHeader title="工具箱" intro="网上收藏的好用工具与资料，按用途分类。" />
+  <div class="rail-layout">
+    <aside class="rail rail-sticky" aria-labelledby="categories-heading">
+      <h2 class="rail-title" id="categories-heading">分类</h2>
+      <ul class="rail-index">
+        {categories.map(category => <li><a href={`#${category.id}`}>{category.name}<span>{category.tools.length}</span></a></li>)}
+      </ul>
+      <Glyph seed="/toolbox" />
+    </aside>
+    <div>
+      {categories.map(category => (
+        <section class="group" aria-labelledby={category.id}>
+          <h2 class="group-title" id={category.id}>{category.name}<span>{category.tools.length} 个</span></h2>
+          <ToolGrid tools={category.tools} />
+        </section>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

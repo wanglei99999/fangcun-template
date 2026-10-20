@@ -1,0 +1,38 @@
+---
+import { render } from 'astro:content';
+import ArticleLayout, { type Fact } from '../../layouts/ArticleLayout.astro';
+import { formatDate, getPosts, neighbors, postUrl, type Post } from '../../utils/content';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post, index) => ({
+    params: { slug: post.id },
+    props: { post, ...neighbors(posts, index, (item: Post) => ({ title: item.data.title, url: postUrl(item) })) },
+  }));
+}
+
+const { post, prev, next } = Astro.props;
+const { Content, headings, remarkPluginFrontmatter } = await render(post);
+const { data } = post;
+const facts: Fact[] = [
+  { label: '发布于', value: formatDate(data.published), datetime: formatDate(data.published) },
+  ...(data.updated ? [{ label: '更新于', value: formatDate(data.updated), datetime: formatDate(data.updated) }] : []),
+  { label: '原文', value: data.source.name, href: data.source.url },
+  { label: '篇幅', value: `${remarkPluginFrontmatter.words} 字，约 ${remarkPluginFrontmatter.minutes} 分钟` },
+];
+---
+<ArticleLayout
+  kind="文章"
+  title={data.title}
+  description={data.description}
+  crumbs={[{ title: '文章', url: '/posts' }, { title: data.blog, url: '/posts' }]}
+  facts={facts}
+  headings={headings}
+  tags={data.tags}
+  date={formatDate(data.published)}
+  source={data.source}
+  prev={prev}
+  next={next}
+>
+  <Content />
+</ArticleLayout>

@@ -1,0 +1,40 @@
+---
+// Placeholder heatmap: deterministic pseudo data until a GitHub account is connected at build time.
+const WEEKS = 53;
+const DAY = 24 * 60 * 60 * 1000;
+const end = new Date();
+const start = new Date(end.getTime() - ((WEEKS - 1) * 7 + end.getDay()) * DAY);
+
+const pseudoRandom = (seed: number): number => ((seed * 9301 + 49297) % 233280) / 233280;
+const days = Array.from({ length: WEEKS * 7 }, (_, index) => {
+  const date = new Date(start.getTime() + index * DAY);
+  const week = Math.floor(index / 7);
+  const activity = pseudoRandom(index + 7) * (0.35 + week / WEEKS);
+  const level = date > end ? -1 : activity > 0.75 ? 4 : activity > 0.55 ? 3 : activity > 0.4 ? 2 : activity > 0.28 ? 1 : 0;
+  return { date: date.toISOString().slice(0, 10), level };
+});
+
+const months = Array.from({ length: WEEKS }, (_, week) => {
+  const first = new Date(start.getTime() + week * 7 * DAY);
+  const last = new Date(first.getTime() + 6 * DAY);
+  return last.getDate() <= 7 ? { week, label: `${last.getMonth() + 1}月` } : null;
+}).filter(month => month !== null);
+---
+<div class="calendar-scroll">
+  <div class="calendar" style={`--weeks: ${WEEKS}`}>
+    <div class="calendar-months" aria-hidden="true">
+      {months.map(month => <span style={`grid-column: ${month.week + 1}`}>{month.label}</span>)}
+    </div>
+    <div class="calendar-weekdays" aria-hidden="true"><span></span><span>一</span><span></span><span>三</span><span></span><span>五</span><span></span></div>
+    <div class="calendar-grid" role="img" aria-label="GitHub 提交日历（占位数据）">
+      {days.map(day => <span class={`level-${day.level}`} title={day.level >= 0 ? day.date : undefined}></span>)}
+    </div>
+  </div>
+</div>
+<div class="calendar-legend" aria-hidden="true">
+  少<span class="level-0"></span><span class="level-1"></span><span class="level-2"></span><span class="level-3"></span><span class="level-4"></span>多
+</div>
+<script>
+  // On narrow screens, start the scrolled calendar at the most recent weeks.
+  document.querySelectorAll<HTMLElement>('.calendar-scroll').forEach(scroller => { scroller.scrollLeft = scroller.scrollWidth; });
+</script>

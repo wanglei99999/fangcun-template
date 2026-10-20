@@ -1,0 +1,20 @@
+---
+import type { Repo } from '../data/content';
+
+interface Props {
+  repos: Repo[];
+}
+const { repos } = Astro.props;
+---
+<ul class="repo-grid">
+  {repos.map(repo => (
+    <li>
+      <button class="repo entry-trigger" data-entry={repo.id}>
+        <span class="repo-owner">{repo.repo.split('/')[0]} /</span>
+        <strong class="repo-name">{repo.title}</strong>
+        <span class="repo-description">{repo.description}</span>
+        <span class="entry-meta">{repo.tags.map(tag => <span>#{tag}</span>)}</span>
+      </button>
+    </li>
+  ))}
+</ul>

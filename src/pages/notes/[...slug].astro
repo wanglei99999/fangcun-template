@@ -1,0 +1,41 @@
+---
+import { render } from 'astro:content';
+import ArticleLayout, { type Fact } from '../../layouts/ArticleLayout.astro';
+import { formatDate, getNotes, neighbors, noteUrl, type Note } from '../../utils/content';
+
+export async function getStaticPaths() {
+  const notes = await getNotes();
+  return notes.map(note => {
+    // Prev/next stay within the same topic.
+    const sameTopic = notes.filter(item => item.data.topic === note.data.topic);
+    const index = sameTopic.indexOf(note);
+    return {
+      params: { slug: note.id },
+      props: { note, ...neighbors(sameTopic, index, (item: Note) => ({ title: item.data.title, url: noteUrl(item) })) },
+    };
+  });
+}
+
+const { note, prev, next } = Astro.props;
+const { Content, headings, remarkPluginFrontmatter } = await render(note);
+const { data } = note;
+const facts: Fact[] = [
+  { label: '更新于', value: formatDate(data.updated), datetime: formatDate(data.updated) },
+  { label: '主题', value: data.topic },
+  { label: '篇幅', value: `${remarkPluginFrontmatter.words} 字，约 ${remarkPluginFrontmatter.minutes} 分钟` },
+];
+---
+<ArticleLayout
+  kind="知识库"
+  title={data.title}
+  description={data.description}
+  crumbs={[{ title: '知识库', url: '/notes' }, { title: data.topic, url: '/notes' }]}
+  facts={facts}
+  headings={headings}
+  tags={data.tags}
+  date={formatDate(data.updated)}
+  prev={prev}
+  next={next}
+>
+  <Content />
+</ArticleLayout>

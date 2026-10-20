@@ -1,0 +1,49 @@
+---
+// Scroll-aware table of contents; the active-heading idea is adapted from Fuwari (MIT License).
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+const items = Astro.props.headings.filter(heading => heading.depth === 2 || heading.depth === 3);
+---
+{items.length > 0 && (
+  <nav class="toc" aria-label="文章目录" data-pagefind-ignore>
+    <details class="toc-details">
+      <summary>目录</summary>
+      <ol>
+        {items.map(heading => (
+          <li class:list={{ sub: heading.depth === 3 }}><a href={`#${heading.slug}`}>{heading.text}</a></li>
+        ))}
+      </ol>
+    </details>
+  </nav>
+)}
+
+<script>
+  const ACTIVE_OFFSET = 120;
+  const details = document.querySelector<HTMLDetailsElement>('.toc-details');
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a')];
+  const headings = links
+    .map(link => document.getElementById(decodeURIComponent(link.hash.slice(1))))
+    .filter((heading): heading is HTMLElement => heading !== null);
+
+  // Wide screens show the TOC as an always-open sidebar; narrow screens keep it collapsed above the text.
+  const wide = matchMedia('(min-width: 901px)');
+  const syncOpen = (): void => { if (details) details.open = wide.matches; };
+  syncOpen();
+  wide.addEventListener('change', syncOpen);
+
+  let frame = 0;
+  function markActive(): void {
+    frame = 0;
+    let active = -1;
+    headings.forEach((heading, index) => { if (heading.getBoundingClientRect().top <= ACTIVE_OFFSET) active = index; });
+    links.forEach((link, index) => link.toggleAttribute('aria-current', index === Math.max(active, 0)));
+  }
+  if (headings.length) {
+    markActive();
+    addEventListener('scroll', () => { if (!frame) frame = requestAnimationFrame(markActive); }, { passive: true });
+  }
+  links.forEach(link => link.addEventListener('click', () => { if (!wide.matches && details) details.open = false; }));
+</script>

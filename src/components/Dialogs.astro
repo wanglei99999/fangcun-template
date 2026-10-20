@@ -1,0 +1,27 @@
+---
+import Icon from './Icon.astro';
+---
+<dialog id="search-dialog" class="search-dialog" aria-label="全站搜索">
+  <div class="search-dialog-top">
+    <Icon name="search" />
+    <label for="site-search" class="sr-only">搜索全站内容</label>
+    <input id="site-search" type="search" placeholder="想找点什么？" autocomplete="off" />
+    <button class="icon-button dialog-close" aria-label="关闭搜索"><Icon name="close" /></button>
+  </div>
+  <div id="search-results" aria-live="polite"></div>
+  <div class="dialog-footer"><span>搜索文章、知识库、仓库、Skills 与工具箱</span><kbd>Esc 关闭</kbd></div>
+</dialog>
+
+<dialog id="entry-dialog" class="entry-dialog" aria-labelledby="entry-title">
+  <div class="entry-dialog-top">
+    <span id="entry-kind"></span>
+    <button class="icon-button dialog-close" aria-label="关闭阅读预览"><Icon name="close" /></button>
+  </div>
+  <article class="entry-body">
+    <div class="entry-preview-label">示例内容，阅读预览</div>
+    <h2 id="entry-title"></h2>
+    <p id="entry-description" class="entry-description"></p>
+    <div id="entry-text"></div>
+    <a id="entry-source" class="button button-solid" target="_blank" rel="noopener noreferrer" hidden></a>
+  </article>
+</dialog>
