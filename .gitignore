@@ -2,6 +2,7 @@ node_modules/
 dist/
 .astro/
 .tmp/
+.wrangler/
 .DS_Store
 
 # Local tool state
