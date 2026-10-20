@@ -1,0 +1,12 @@
+// Cloudflare Workers static-assets deployment. Workers Builds runs `pnpm build`, then `npx wrangler deploy`.
+{
+  // Worker name; the default address becomes <name>.<account subdomain>.workers.dev.
+  "name": "fangcun",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // Serve dist/404.html with a 404 status for unknown paths.
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}

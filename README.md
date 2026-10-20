@@ -68,6 +68,7 @@ git pull upstream main
 | `src/data/content.ts` | 仓库、Skills、工具箱、文章页侧栏的博客来源、关于页的项目和留言 |
 | `public/` | 网站图标：`favicon.svg`、`favicon-32.png`、`apple-touch-icon.png` |
 | `tests/e2e/` | 部分测试断言了示例内容的标题和篇数，换内容时一起改 |
+| `wrangler.jsonc` | `name` 是 Cloudflare 上的项目名，也决定默认的 workers.dev 地址 |
 
 内容换成真的以后，还有三处"示例"字样写在组件里：页脚的"此站为设计预览，内容均为示例"（`src/components/SiteFooter.astro`）、预览弹窗的"示例内容，阅读预览"（`src/components/Dialogs.astro`）、关于页留言墙下的说明（`src/pages/about.astro`）。
 
@@ -149,15 +150,22 @@ GitHub 卡片在浏览器里请求 GitHub API，结果在 `sessionStorage` 里�
 
 ## 部署到 Cloudflare
 
+仓库自带 `wrangler.jsonc`，按 Workers 静态资源的方式部署：`dist/` 整个作为静态文件上传，不存在的路径返回 `dist/404.html` 和 404 状态码，`/notes/java/concurrency` 会 307 跳转到带斜杠的地址。Node 版本由 `.node-version` 指定为 24。
+
+在 Cloudflare 控制台 Workers & Pages → Create application → Import a repository，选中仓库后这样填：
+
 | 设置 | 值 |
 | --- | --- |
-| 构建命令 | `pnpm build` |
-| 输出目录 | `dist` |
-| 环境变量 | `NODE_VERSION=24`，`SITE_URL=https://你的域名` |
+| Project name | 和 `wrangler.jsonc` 的 `name` 一致，默认地址是 `<name>.<账号子域名>.workers.dev` |
+| Build command | `pnpm build` |
+| Deploy command | `npx wrangler deploy`（默认值） |
+| Build variables | `PNPM_VERSION=11.28.6`，`SITE_URL=https://你的地址` |
 
-`SITE_URL` 不设时默认是 `https://notes.example.com`，RSS、Sitemap 和 canonical 链接都会指错地址。
+构建镜像默认的 pnpm 是 10.x，所以要用 `PNPM_VERSION` 指定 11。`SITE_URL` 不设时默认是 `https://notes.example.com`，RSS、Sitemap 和 canonical 链接都会指错地址；第一次部署拿到 workers.dev 地址后填进去，再重新部署一次。
 
-Cloudflare Pages 会自动把 `404.html` 当作 404 页。用 Workers 部署时，需要在配置里写 `not_found_handling = "404-page"`。`*.pages.dev` 在国内访问不稳定，最好绑定自己的域名。
+部署前可以在本地验证配置：`pnpm build` 之后运行 `npx wrangler dev`，在 `http://localhost:8787` 看到的就是线上的路由行为。`*.workers.dev` 在国内访问不稳定，最好绑定自己的域名（项目的 Settings → Domains & Routes）。
+
+用 Cloudflare Pages 部署也可以：构建命令 `pnpm build`，输出目录 `dist`，同样设置上面两个变量。Pages 会自动把 `404.html` 当作 404 页。
 
 ## 测试
 
